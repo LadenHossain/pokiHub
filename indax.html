@@ -1,0 +1,2276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+  <title>Movie Post Slider</title>
+  <!-- Font Awesome CDN -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    html {
+      -webkit-text-size-adjust: 100%;
+      -ms-text-size-adjust: 100%;
+    }
+
+    body {
+      background: #111;
+      font-family: sans-serif;
+      color: #fff;
+      padding: 0;
+      overflow-x: hidden;
+      width: 100%;
+      position: relative;
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 20px;
+      background-color: #222;
+      color: white;
+      position: relative;
+    }
+
+    .header-content {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      flex: 1;
+    }
+
+    .logo {
+      flex-shrink: 0;
+    }
+
+    .logo img {
+      width: 325px;
+      height: 69px;
+    }
+
+    .mobile-search {
+      display: none;
+    }
+
+    nav {
+      display: flex;
+      gap: 20px;
+      align-items: center;
+      padding-right: 30px;
+    }
+
+    .nav-item {
+      position: relative;
+    }
+
+    .nav-item:hover .dropdown {
+      display: block;
+    }
+
+    .nav-item i {
+      margin-left: 5px;
+    }
+
+    .dropdown {
+      display: none;
+      position: absolute;
+      width: 300px;
+      top: 100%;
+      left: 0;
+      background-color: #222;
+      padding: 10px;
+      border: 1px solid #333;
+      z-index: 1000;
+    }
+
+    .dropdown a {
+      display: block;
+      color: white;
+      padding: 5px;
+      text-decoration: none;
+    }
+
+    .dropdown a:hover {
+      background-color: #444;
+    }
+
+    .search-box {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      position: relative;
+    }
+
+    .menu-icon {
+      display: none;
+    }
+
+    .search-box input {
+      padding: 8px 12px;
+      border-radius: 4px;
+      border: 1px solid #333;
+      background: #333;
+      color: #fff;
+      width: 200px;
+      transition: all 0.3s ease;
+    }
+
+    .search-box input:focus {
+      outline: none;
+      border-color: #f5c518;
+      width: 250px;
+    }
+
+    .search-box i {
+      color: #f5c518;
+      cursor: pointer;
+    }
+
+    .search-results {
+      position: absolute;
+      top: 100%;
+      right: 0;
+      width: 300px;
+      max-height: 400px;
+      overflow-y: auto;
+      background: #222;
+      border-radius: 4px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      display: none;
+      z-index: 1000;
+    }
+
+    .search-results.active {
+      display: block;
+    }
+
+    .search-result-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px;
+      border-bottom: 1px solid #333;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+
+    .search-result-item:hover {
+      background: #333;
+    }
+
+    .search-result-item img {
+      width: 50px;
+      height: 75px;
+      object-fit: cover;
+      border-radius: 4px;
+    }
+
+    .search-result-info {
+      flex: 1;
+    }
+
+    .search-result-title {
+      color: #fff;
+      font-size: 14px;
+      margin-bottom: 4px;
+    }
+
+    .search-result-rating {
+      color: #f5c518;
+      font-size: 12px;
+    }
+
+    .no-results {
+      padding: 20px;
+      text-align: center;
+      color: #ccc;
+    }
+
+    .mobile-search {
+      display: none;
+    }
+
+    @media (max-width: 768px) {
+      body {
+        font-size: 16px;
+        line-height: 1.5;
+      }
+
+      input, select, textarea {
+        font-size: 16px !important;
+      }
+
+      .logo img {
+        width: 180px;
+        height: auto;
+      }
+
+      .search-box input {
+        font-size: 16px !important;
+        height: 44px;
+      }
+
+      .download-btn {
+        font-size: 14px;
+        padding: 12px 16px;
+      }
+
+      .title {
+        font-size: 14px;
+      }
+
+      .imdb-tag {
+        font-size: 12px;
+        padding: 4px 8px;
+      }
+
+      header {
+        justify-content: space-between;
+        padding: 10px;
+        flex-wrap: wrap;
+      }
+
+      .header-content {
+        width: 100%;
+        justify-content: space-between;
+      }
+
+      .menu-icon {
+        display: block;
+        font-size: 24px;
+        cursor: pointer;
+        color: #f5c518;
+        order: 1;
+      }
+
+      .logo {
+        margin: 0;
+        order: 2;
+      }
+
+      .mobile-search {
+        display: block;
+        order: 3;
+      }
+
+      .mobile-search i {
+        color: #f5c518;
+        font-size: 20px;
+        cursor: pointer;
+      }
+
+      .search-box {
+        display: none;
+        position: fixed;
+        top: 60px;
+        left: 0;
+        width: 100%;
+        padding: 15px;
+        background: #222;
+        z-index: 1001;
+        border-top: 1px solid #333;
+      }
+
+      .search-box.active {
+        display: flex;
+      }
+
+      .search-box input {
+        width: 100%;
+        font-size: 16px;
+      }
+
+      .search-box input:focus {
+        width: 100%;
+      }
+
+      .search-results {
+        position: fixed;
+        top: 110px;
+        left: 0;
+        width: 100%;
+        max-height: calc(100vh - 110px);
+        border-radius: 0;
+      }
+
+      nav {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100vh;
+        background-color: rgba(0, 0, 0, 0.95);
+        flex-direction: column;
+        padding: 60px 20px 20px;
+        z-index: 1000;
+        overflow-y: auto;
+      }
+
+      nav.active {
+        display: flex;
+      }
+
+      .nav-item {
+        width: 100%;
+        padding: 10px 0;
+        border-bottom: 1px solid #333;
+      }
+
+      .nav-item:last-child {
+        border-bottom: none;
+      }
+
+      .nav-item span {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        width: 100%;
+        padding: 10px 0;
+      }
+
+      .dropdown {
+        position: static;
+        width: 100%;
+        background: transparent;
+        border: none;
+        padding: 10px 0 0 20px;
+        display: none;
+      }
+
+      .nav-item.active .dropdown {
+        display: block;
+      }
+
+      .dropdown a {
+        padding: 8px 0;
+        border-bottom: 1px solid #333;
+        display: block;
+      }
+
+      .dropdown a:last-child {
+        border-bottom: none;
+      }
+    }
+
+    .slider-container {
+      overflow: hidden;
+      position: relative;
+      max-width: 100%;
+      margin: auto;
+      cursor: grab;
+    }
+
+    .slider-track {
+      display: flex;
+      transition: transform 0.4s ease;
+    }
+
+    .post {
+      min-width: 100%;
+      padding: 10px;
+    }
+
+    .post-inner {
+      background: #222;
+      border-radius: 10px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .post-inner img {
+      width: 100%;
+      display: block;
+      transition: transform 0.3s ease;
+      cursor: pointer;
+    }
+
+    .post-inner img.active {
+      transform: scale(1.05);
+    }
+
+    .imdb-tag {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      background: #ffffff55;
+      color: #fff;
+      font-weight: bold;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 12px;
+    }
+
+    .star {
+      color: gold;
+    }
+
+    .title {
+      padding: 10px;
+      font-size: 14px;
+      position: relative;
+      min-height: 40px;
+      line-height: 1.2;
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+    }
+
+    .post-inner:hover .title {
+      color: #f5c518;
+    }
+
+    .title i {
+      margin-right: 0;
+      color: #f5c518;
+      font-size: 18px;
+      flex-shrink: 0;
+      display: inline-block;
+      vertical-align: top;
+      position: relative;
+      top: 2px;
+    }
+
+    .title span {
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      width: 100%;
+      max-height: 2.4em;
+      line-height: 1.2;
+      word-wrap: break-word;
+      white-space: normal;
+    }
+
+    .download-btn {
+      background: #f5c518;
+      color: #000;
+      width: 100%;
+      font-weight: 500;
+      padding: 8px 16px;
+      margin-top: 10px;
+      display: inline-block;
+      text-decoration: none;
+      text-align: center;
+      border-radius: 4px;
+      transition: all 0.3s ease;
+    }
+
+    .download-btn:hover {
+      background: #fff;
+      color: #000;
+      transform: translateY(-2px);
+      box-shadow: 0 2px 8px rgba(245, 197, 24, 0.3);
+    }
+
+    .download-btn:active {
+      transform: translateY(0);
+    }
+
+    /* Responsive */
+    @media (max-width: 600px) {
+      .post {
+        min-width: calc(125% / 4);
+      }
+    }
+
+    @media (min-width: 601px) and (max-width: 900px) {
+      .post {
+        min-width: calc(100% / 3);
+      }
+    }
+
+    @media (min-width: 901px) and (max-width: 1200px) {
+      .post {
+        min-width: calc(100% / 4);
+      }
+    }
+
+    @media (min-width: 1201px) {
+      .post {
+        min-width: calc(100% / 5);
+      }
+    }
+
+    @media (max-width: 820px) {
+      .title {
+        font-size: 10px;
+        min-height: 32px;
+        padding: 8px;
+      }
+      .title i {
+        font-size: 12px;
+        top: 1px;
+      }
+      .title span {
+        max-height: 2.4em;
+      }
+      .recent-post .title {
+        font-size: 10px;
+        min-height: 32px;
+        padding: 8px;
+      }
+      .recent-post .title i {
+        font-size: 12px;
+        top: 1px;
+      }
+      .recent-post .title span {
+        max-height: 2.4em;
+      }
+    }
+
+    /* Style for Recent Posts Section */
+.recent-posts {
+  margin-top: 40px;
+}
+
+.future {
+  font-size: 24px;
+  font-weight: bold;
+  color: #fff;
+  padding-left: 29px;
+  margin-bottom: 20px;
+}
+
+.recent-posts-container {
+  display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: center;
+}
+
+.recent-post {
+  background: #222;
+  width: calc(125% / 4); /* Changed from 100% */
+  border-radius: 10px;
+  overflow: hidden;
+  position: relative;
+  padding: 10px;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .recent-post:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+.recent-post img {
+  width: 100%;
+  display: block;
+  border-radius: 8px;
+      transition: transform 0.3s ease;
+      cursor: pointer;
+    }
+
+    .recent-post img.active {
+      transform: scale(1.05);
+}
+
+.recent-post .title {
+  padding: 10px;
+  font-size: 16px;
+      position: relative;
+      min-height: 40px;
+      line-height: 1.2;
+  display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      transition: color 0.3s ease;
+    }
+
+    .recent-post:hover .title {
+      color: #f5c518;
+}
+
+.recent-post .title i {
+      margin-right: 0;
+  color: #f5c518;
+  font-size: 20px;
+      flex-shrink: 0;
+      display: inline-block;
+      vertical-align: top;
+      position: relative;
+      top: 2px;
+    }
+
+    .recent-post .title span {
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      width: 100%;
+      max-height: 2.4em;
+      line-height: 1.2;
+      word-wrap: break-word;
+      white-space: normal;
+}
+
+/* Responsive for Recent Posts */
+@media (min-width: 600px) {
+  .recent-post {
+    width: calc(100% / 4);
+  }
+}
+
+@media (min-width: 900px) {
+  .recent-post {
+    width: calc(100% / 4);
+  }
+}
+
+@media (min-width: 1200px) {
+  .recent-post {
+    width: 23%;
+  }
+}
+
+@media (max-width: 820px) {
+  .recent-post .title {
+    padding: 10px;
+    font-size: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+  }
+  .download-btn{
+    font-size: 10px;
+    font-weight: 400;
+    padding: 10px 10px;
+  }
+  .recent-post{
+    padding: 5px;
+  }
+  .recent-post .title i{
+    font-size: 12px;
+  }
+  .recent-posts-container {
+    gap: 10px;
+      }
+    }
+
+    /* Footer Styles */
+    .footer {
+      background-color: #222;
+      color: #fff;
+      padding: 40px 20px;
+      margin-top: 40px;
+    }
+
+    .footer-content {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 30px;
+    }
+
+    .footer-section h3 {
+      color: #f5c518;
+      font-size: 18px;
+      margin-bottom: 20px;
+      position: relative;
+      padding-bottom: 10px;
+    }
+
+    .footer-section h3::after {
+      content: '';
+      position: absolute;
+      left: 0;
+      bottom: 0;
+      width: 50px;
+      height: 2px;
+      background-color: #f5c518;
+    }
+
+    .footer-section ul {
+      list-style: none;
+      padding: 0;
+    }
+
+    .footer-section ul li {
+      margin-bottom: 10px;
+    }
+
+    .footer-section ul li a {
+      color: #fff;
+      text-decoration: none;
+      transition: color 0.3s ease;
+    }
+
+    .footer-section ul li a:hover {
+      color: #f5c518;
+    }
+
+    .footer-section p {
+      color: #ccc;
+      line-height: 1.6;
+    }
+
+    .social-links {
+      display: flex;
+      gap: 15px;
+      margin-top: 20px;
+    }
+
+    .social-links a {
+      color: #fff;
+      font-size: 20px;
+      transition: color 0.3s ease;
+    }
+
+    .social-links a:hover {
+      color: #f5c518;
+    }
+
+    .footer-bottom {
+      text-align: center;
+      padding-top: 30px;
+      margin-top: 30px;
+      border-top: 1px solid #333;
+    }
+
+    .footer-bottom p {
+      color: #ccc;
+      font-size: 14px;
+    }
+
+    /* Footer Responsive Styles */
+    @media (max-width: 1024px) {
+      .footer-content {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 30px;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .footer {
+        padding: 30px 15px;
+      }
+
+      .footer-content {
+        grid-template-columns: 1fr;
+        gap: 30px;
+      }
+
+      .footer-section {
+        text-align: center;
+        padding: 0 15px;
+      }
+
+      .footer-section:not(:last-child) {
+        margin-bottom: 20px;
+        padding-bottom: 20px;
+        border-bottom: 1px solid #333;
+      }
+
+      .footer-section h3 {
+        margin-bottom: 15px;
+      }
+
+      .footer-section h3::after {
+        left: 50%;
+        transform: translateX(-50%);
+      }
+
+      .footer-section ul {
+        margin-bottom: 0;
+      }
+
+      .footer-section ul li {
+        margin-bottom: 12px;
+      }
+
+      .footer-section ul li:last-child {
+        margin-bottom: 0;
+      }
+
+      .social-links {
+        justify-content: center;
+        margin-top: 15px;
+      }
+    }
+
+    /* Modal Styles */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.9);
+      z-index: 1000;
+      overflow-y: auto;
+    }
+
+    .modal-content {
+      background: #222;
+      margin: 20px auto;
+      width: 95%;
+      max-width: 800px;
+      border-radius: 10px;
+      position: relative;
+      padding: 20px;
+    }
+
+    .modal-close {
+      position: absolute;
+      right: 20px;
+      top: 20px;
+      color: #fff;
+      font-size: 24px;
+      cursor: pointer;
+      z-index: 1001;
+    }
+
+    .modal-header {
+      display: flex;
+      gap: 20px;
+      margin-bottom: 20px;
+    }
+
+    .modal-image {
+      width: 120px;
+      height: 180px;
+      object-fit: cover;
+      border-radius: 8px;
+    }
+
+    .modal-info {
+      flex: 1;
+    }
+
+    .modal-title {
+      font-size: 20px;
+      color: #fff;
+      margin-bottom: 10px;
+    }
+
+    .modal-rating {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+
+    .modal-stars {
+      display: flex;
+      gap: 2px;
+    }
+
+    .modal-stars i {
+      color: #f5c518;
+    }
+
+    .modal-category {
+      color: #ccc;
+      font-size: 14px;
+    }
+
+    .modal-divider {
+      height: 2px;
+      background: #333;
+      margin: 20px 0;
+    }
+
+    .modal-ad {
+      background: #333;
+      padding: 20px;
+      text-align: center;
+      margin: 20px 0;
+      border-radius: 8px;
+    }
+
+    .modal-description {
+      color: #ccc;
+      line-height: 1.6;
+      margin-bottom: 20px;
+    }
+
+    .download-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .download-table th,
+    .download-table td {
+      padding: 12px;
+      text-align: left;
+      border-bottom: 1px solid #333;
+    }
+
+    .download-table th {
+      color: #f5c518;
+      font-weight: 500;
+    }
+
+    .download-table td {
+      color: #fff;
+    }
+
+    .download-btn-modal {
+      background: #f5c518;
+      color: #000000;
+      padding: 8px 16px;
+      border-radius: 4px;
+      text-decoration: none;
+      font-weight: 500;
+      display: inline-block;
+    }
+    .download-btn-modal:hover{
+      transform: translateY(-3px);
+      box-shadow: 0 5px 15px #f5c5184f;
+    }
+
+    @media (max-width: 768px) {
+      .modal-header {
+        display: flex;
+        flex-direction: row;
+        gap: 15px;
+        align-items: flex-start;
+      }
+
+      .modal-image {
+        width: 100px;
+        height: 150px;
+        object-fit: cover;
+      }
+
+      .modal-info {
+        display: flex;
+        width: 100%;
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .modal-title {
+        font-size: 18px;
+        text-align: left;
+        margin-bottom: 8px;
+      }
+
+      .modal-rating {
+        justify-content: flex-start;
+        margin-bottom: 8px;
+      }
+
+      .modal-category {
+        text-align: left;
+      }
+
+      .download-table {
+        font-size: 14px;
+      }
+
+      .download-table th,
+      .download-table td {
+        padding: 8px;
+      }
+    }
+
+    /* Latest Upload Sections Styles */
+    .latest-upload-section {
+      margin-top: 40px;
+      padding: 0 20px;
+    }
+
+    .section-title {
+      font-size: 20px;
+      font-weight: bold;
+      color: #fff;
+      margin-bottom: 20px;
+      padding-left: 10px;
+      border-left: 4px solid #f5c518;
+    }
+
+    .latest-upload-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      justify-content: center;
+    }
+
+    .latest-upload-post {
+      background: #222;
+      width: calc(125% / 4);
+      border-radius: 10px;
+      overflow: hidden;
+      position: relative;
+      transition: transform 0.3s ease;
+    }
+
+    .latest-upload-post:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    }
+
+    .latest-upload-post img {
+      width: 100%;
+      display: block;
+      transition: transform 0.3s ease;
+      cursor: pointer;
+    }
+
+    .latest-upload-post img.active {
+      transform: scale(1.05);
+    }
+
+    .latest-upload-post .title {
+      padding: 10px;
+      font-size: 14px;
+      position: relative;
+      min-height: 40px;
+      line-height: 1.2;
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      transition: color 0.3s ease;
+    }
+
+    .latest-upload-post:hover .title {
+      color: #f5c518;
+    }
+
+    .latest-upload-post .title i {
+      margin-right: 0;
+      color: #f5c518;
+      font-size: 20px;
+      flex-shrink: 0;
+      display: inline-block;
+      vertical-align: top;
+      position: relative;
+      top: 2px;
+    }
+
+    .latest-upload-post .title span {
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      width: 100%;
+      max-height: 2.4em;
+      line-height: 1.2;
+      word-wrap: break-word;
+      white-space: normal;
+    }
+
+    .latest-upload-post .download-btn {
+      background: #f5c518;
+      color: #000;
+      width: 100%;
+      font-weight: 500;
+      padding: 8px 16px;
+      margin-top: 10px;
+      display: inline-block;
+      text-decoration: none;
+      text-align: center;
+      border-radius: 4px;
+      transition: all 0.3s ease;
+    }
+
+    .latest-upload-post .download-btn:hover {
+      background: #fff;
+      color: #000;
+      transform: translateY(-2px);
+      box-shadow: 0 2px 8px rgba(245, 197, 24, 0.3);
+    }
+
+    /* Responsive styles for latest-upload-section */
+    @media (min-width: 600px) {
+      .latest-upload-post {
+        width: calc(100% / 4);
+      }
+    }
+
+    @media (min-width: 900px) {
+      .latest-upload-post {
+        width: calc(100% / 4);
+      }
+    }
+
+    @media (min-width: 1200px) {
+      .latest-upload-post {
+        width: 23%;
+      }
+    }
+
+    @media (max-width: 820px) {
+      .latest-upload-post .title {
+        padding: 10px;
+        font-size: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+      }
+      .latest-upload-post .download-btn {
+        font-size: 10px;
+        font-weight: 400;
+        padding: 10px 10px;
+      }
+      .latest-upload-post {
+        padding: 5px;
+      }
+      .latest-upload-post .title i {
+        font-size: 12px;
+      }
+      .latest-upload-container {
+        gap: 10px;
+      }
+    }
+
+    /* Add this to your existing styles */
+    .hidden-post {
+      display: none !important;
+    }
+
+    /* Ensure search results show hidden posts */
+    .search-results .search-result-item {
+      display: flex !important;
+    }
+  </style>
+  <header>
+    <div class="header-content">
+    <div class="menu-icon" onclick="toggleMenu()"><i class="fas fa-bars"></i></div>
+
+    <div class="logo">
+      <a href="#"><img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEi7S-L8eSc7I9_IC6-5loBJ3UKyufnMbh_JEWkfDcIZ_7dK3KXzEYwjeG63ewdDKiYJEE92ElB8mpU7aa3cQ_q7nERXRgEJ_FiB4XS18-QjHi80gRItGG4fJt00oENc8AlqA0bmFLvcl6x3pCdoQDoM_cZwyOSwQKPqJS7r8pmyIU9f5PtzCLgP1zn1_g/s1600/logo.png" alt="pikoHub Logo"></a>
+      </div>
+
+      <div class="mobile-search">
+        <i class="fas fa-search" id="mobileSearchButton"></i>
+      </div>
+    </div>
+
+    <nav id="navbar">
+      <div class="nav-item">
+        <span>Movies <i class="fas fa-angle-down"></i></span>
+        <div class="dropdown">
+          <a href="#">Animation Movies</a>
+          <a href="#">Animation Dubbed Movies</a>
+          <a href="#">English Movies</a>
+          <a href="#">Hindi Movies</a>
+          <a href="#">Bangla Movies</a>
+          <a href="#">English & Foreign Dubbed Movies</a>
+          <a href="#">Foreign Language Movies</a>
+          <a href="#">Hindi Movies</a>
+          <a href="#">Tamil Telugu & Others Movie</a>
+          <a href="#">Tamil Telugu & Others Hindi Dubbed</a>
+        </div>
+      </div>
+
+      <div class="nav-item">
+        <span>TV Show <i class="fas fa-angle-down"></i></span>
+        <div class="dropdown">
+          <a href="#">English tv show</a>
+          <a href="#">Hindi tv & Web Series</a>
+          <a href="#">Dubbed TV Series & Shows</a>
+        </div>
+      </div>
+
+      <div class="nav-item">
+        <span>Game</span>
+      </div>
+    </nav>
+
+    <div class="search-box">
+      <input type="text" id="searchInput" placeholder="Search movies...">
+      <i class="fas fa-search" id="searchButton"></i>
+      <div class="search-results" id="searchResults"></div>
+    </div>
+  </header>
+</head>
+<body>
+
+
+
+  <div class="slider-container" id="sliderContainer">
+    <div class="slider-track" id="sliderTrack">
+
+      <!-- Repeatable post structure -->
+      <div class="post">
+        <div class="post-inner">
+          <div class="imdb-tag"><span class="star">★</span> 6.9</div>
+          <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEi7vD-45QjtiSBVgvG9citrf0Av0tgW7Q3OjU08FXiZzOvENhsQsBGcqHoqzI6mKwfSeXMmicACRaOUPpqYTCZnYvBmmjdi76GiSWIAt_b-XjN6_ynZLWQRV4NwXHeCr1O-HBAHj74YVIvN_CSJrYRWLwTE6TJZL8qyPk1FHkY7Mhhwjeq7YOGg8rkD7A/s1600/mov%20%281%29.png" alt="">
+          <div class="title"><i class="fa-solid fa-film"></i><span>Game Changer (2024)</span></div>
+          <a href="#" class="download-btn">Download</a>
+        </div>
+      </div>
+
+      <div class="post">
+        <div class="post-inner">
+          <div class="imdb-tag"><span class="star">★</span> 4.1</div>
+          <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiwg7MTT7NpB_dotcdd5QkeN4Kr86O8ofGELrAw3qOfZjbMwgDfdyDiNRX41pA8C0J7twNE4E3zbajcdtdnUpNr2hE0PJcEDzS1U9tNGI3M29xNkUX3RdlSYIVGfZhCSuw27X-2roFNR8u7IgQvRBJYlFHu99eL6bZzap-U1e65ExmFdd_ztUwrv4JWBA/s1600/mov%20%282%29.png" alt="">
+          <div class="title"><i class="fa-solid fa-film"></i><span>Jewel Thief - The Heist Begins (2024)</span></div>
+          <a href="#" class="download-btn">Download</a>
+        </div>
+      </div>
+
+      <div class="post">
+        <div class="post-inner">
+          <div class="imdb-tag"><span class="star">★</span> 5.1</div>
+          <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEg4cL-ynOpmch9xUt0fj1vxNWmof_uy1lM2PrYbBZ07bOcNamvkhQfZKX0xkqVnjTXqbQt4iHvI9F2LGwlKgZJxiuwXHg6NdXzRYT9yQceH6XnPbSy2Ny1bndtda_zUMYlMcETqD6dbkIHuCwiVXLIy-mKsGcaR520P629Cqq17Uge24by4O-djkb6PQA/s1600/mov%20%283%29.png" alt="">
+          <div class="title"><i class="fa-solid fa-film"></i><span>Daagi (2025)</span></div>
+          <a href="#" class="download-btn">Download</a>
+        </div>
+      </div>
+
+      <div class="post">
+        <div class="post-inner">
+          <div class="imdb-tag"><span class="star">★</span> 8.8</div>
+          <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEg_WI03p5NqHyPArgjoOL6U_JnCqxC6jtC_Bxr87NoumgiuMKpApGZE8SkKSJdsCzS3adXG2t-TlWis9OU1Mrkcx3Ewq-mg3blPl8VNbc4i_nfSzh9aSmXZpRcxkVsooyCgmPNB9QNZ_39x_K1kxWX8s0xMy8P6E9WEcl_bw8s-UO2KbbRfmXloELCfjg/s1600/mov%20%284%29.png" alt="">
+          <div class="title"><i class="fa-solid fa-film"></i><span>12th Fail</span></div>
+          <a href="#" class="download-btn">Download</a>
+        </div>
+      </div>
+
+      <div class="post">
+        <div class="post-inner">
+          <div class="imdb-tag"><span class="star">★</span> 7.4</div>
+          <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiIZDmoomfF_kkbVOwuev-wMppvLAffBtIzGh5jOOu7f6iLZ0K98bzAOs3rM9hChWZVftYWnbFuFF3gm3bLiZEDd-lMfSsi26oRWIQ1LXLbZ0KjhRvRjHfoMfQiXcD9LvzECiggAwJrski6j8pgVbnCd_UmYvmMWqf8hJCTL6hFZNLztDpsGW9dckf22w/s1600/mov%20%285%29.png" alt="">
+          <div class="title"><i class="fa-solid fa-film"></i><span>Borbaad (2025)</span></div>
+          <a href="#" class="download-btn">Download</a>
+        </div>
+      </div>
+
+      <div class="post">
+        <div class="post-inner">
+          <div class="imdb-tag"><span class="star">★</span> 6.4</div>
+          <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhv1QaeleNXrJyv6aPHA8qdukuta39kT-J5p9JLK6r2iQLtqOTYS28_Yis_GD0Pz36yvQoU3NP_wkVDxzFAtJ-4GLqibdhM5qG6_16pVuSwUHPsKM6Rw3iyBqt7Tt3U_fi6Vlpm-4CHaz6iX9wiJm5g8KlMZYGPauE4mo0m-dZzhZD3IUm_uoMIuipLWg/s1600/mov%20%286%29.png" alt="">
+          <div class="title"><i class="fa-solid fa-film"></i><span>Tiger 3</span></div>
+          <a href="#" class="download-btn">Download</a>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Recent Posts Section -->
+<div class="recent-posts">
+  <h2 class="future">Recent Posts:</h2>
+  <div class="recent-posts-container">
+    <!-- Posts have been removed -->
+  </div>
+</div>
+
+<!-- Add after the Recent Posts section -->
+<div class="latest-upload-section">
+  <h2 class="section-title">Latest Upload in Animation Movies</h2>
+  <div class="recent-posts-container" id="animationMovies">
+    <!-- First 6 visible posts -->
+    <div class="recent-post">
+      <div class="imdb-tag"><span class="star">★</span> 8.6</div>
+      <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhiP5RquF_fTfQV-6CJIpKvIG53yeroXxLJbKFNGfTjfU8fmUss2Hdl_ms1MabxKN6jpLDImfO-TVKCxhUDzNmZCPeLsahsRpew8tvXu6zigdhkIebcjcnxO_zqd8sWP9bIiCtQHRHqcCVizYYdLxyJRL5k8EitX8kX8smeLnf5EM13sJ-vdeFWejMoKg/s1600/01" alt="Spirited Away">
+      <div class="title"><i class="fa-solid fa-film"></i><span>Spirited Away</span></div>
+      <a href="#" class="download-btn">Download</a>
+    </div>
+
+    <div class="recent-post">
+      <div class="imdb-tag"><span class="star">★</span> 8.4</div>
+      <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhAJKUfoAkoF6AlntV2Zm4t4FnmpDJwa1LonzyxrSRH1N_0FHen3B9MkgO7xHaHumfB7NxODxBvt5Hp3LyNV_6mobABWUM7CJwm8Rw4PdsD01WDRJURMwJNzgI1Scx41SulZUkg5Eq8I5ou_CzMAJuCdFjgcnPzTEIici4GGcHnIPozWl3eYjFEvS4sPg/s1600/2.png" alt="Coco">
+      <div class="title"><i class="fa-solid fa-film"></i><span>Coco</span></div>
+      <a href="#" class="download-btn">Download</a>
+    </div>
+
+    <div class="recent-post">
+      <div class="imdb-tag"><span class="star">★</span> 8.3</div>
+      <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiZ0PFz1DYjQzjlrzzpHBRcuYm9QbZVunOnYrFU_KWog8tPq7NTqD5Bd6CvQkKSc5WLEKFnO_DPYWe-43X5Y3Dq7On7McsvPpvOal-C7dIDLyTCYNWC_8s7jQgXW3QyEJpN2dAp6MxpK9ezE1xk155Dwr9tyjZTUt6tLe4mHhOcKyI36LdMiz8aObccgA/s1600/03.jpg" alt="Up">
+      <div class="title"><i class="fa-solid fa-film"></i><span>Up</span></div>
+      <a href="#" class="download-btn">Download</a>
+    </div>
+
+    <div class="recent-post">
+      <div class="imdb-tag"><span class="star">★</span> 8.1</div>
+      <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhJ_y41rNyDnvF-uasglQG8VBLWCwaRiokcYgWeFLHd9X58Amm2y1KNcAB5wzgXGXX4pAVUvghc4hT0qad6Xw6zek60d1S_TVtqWMe_usZzD3yGyzBA2I-kgpZXmo6H7Ay9aGqnIzBBojqFUqv_FI8qZ8UFhHL8ZX9Jpw_6e6uWX8BlvvtdQ8_MZJEyMA/s1600/04.jpg" alt="Inside Out">
+      <div class="title"><i class="fa-solid fa-film"></i><span>Inside Out</span></div>
+      <a href="#" class="download-btn">Download</a>
+    </div>
+
+    <div class="recent-post">
+      <div class="imdb-tag"><span class="star">★</span> 8.0</div>
+      <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjPuPQ2Yc2H_4V-3Ss7XyfDx-ttG8S-H43dzZOSpgQUc6dIw-6xjksueKolLG0Y_9aF8zmI8o_p7_Q3ip2JHr-IWkdnbEw5qItEkTFXByt4m-On9e0tbd3SWqBO5zXJVv9WOLgOrb_X5JoJxK2SF-IcfM0O4Xy69e7ssGXazM9FJc1D-jkprUdD6COkvQ/s1600/05.jpg" alt="Zootopia">
+      <div class="title"><i class="fa-solid fa-film"></i><span>Zootopia</span></div>
+      <a href="#" class="download-btn">Download</a>
+    </div>
+
+    <div class="recent-post">
+      <div class="imdb-tag"><span class="star">★</span> 8.3</div>
+      <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEj9hW3KIRnQQGaqa1zCWgkK75_JE8OrBHn4FIHjlMHwtrc1DjZjZTuy_QAp7I5E5JtlQSoxCG6eDFJSeeSSGCfbQs5IDxx_bu5AYV94p3ijUXZOU0fHbZ-rEk3wOgTtVVLcmOzUadwNG67FMNN9eXMb5dbApE_yBgLVhupDkQNPJyuJB3_Ysgkl__IrJg/s1600/06.jpg" alt="Toy Story 3">
+      <div class="title"><i class="fa-solid fa-film"></i><span>Toy Story 3</span></div>
+      <a href="#" class="download-btn">Download</a>
+    </div>
+
+    <!-- Hidden posts (will be searchable) -->
+    <div class="recent-post hidden-post">
+      <div class="imdb-tag"><span class="star">★</span> 8.5</div>
+      <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjWzMVWLVLLFS2BOkUnatye-c5L4VNNyC_RqkPBC7FiU0Ds88dBFe3Y_U0kvBxvQxP1VcbSJHCBEgw9W3LBc43uwbdt9fzwbwpN6-bt1mIfNgvYEaUZOuDop9X6Z2TLIjR6BtCGTZFdGZVZ3ATWMMSqvi3hOhNbO-VR98KuAsq5pjdrZVpxj60srmhCag/s1600/07.jpg" alt="The Lion King">
+      <div class="title"><i class="fa-solid fa-film"></i><span>The Lion King (1994)</span></div>
+      <a href="#" class="download-btn">Download</a>
+    </div>
+
+    <div class="recent-post hidden-post">
+      <div class="imdb-tag"><span class="star">★</span> 8.1</div>
+      <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgSL4dvqlYdNXU6cHx-q6rWTWnUiZbGIWUqoQn3u_gOiiu19pjKZm3-oWy0q4sq7wWjjMgFB8Yc4nc8Z6GRBF5dS8L142ND9lWj4CDLIf2OmeNjjyluhyphenhyphenQmkFFCrN0QFbuF0gS89gVL1Chitr-xXvzSLfbhbTxe2klbgyLpw74ton-x8-0wg6jUg37zJQ/s1600/08.jpg" alt="How to Train Your Dragon">
+      <div class="title"><i class="fa-solid fa-film"></i><span>How to Train Your Dragon</span></div>
+      <a href="#" class="download-btn">Download</a>
+    </div>
+
+    <div class="recent-post hidden-post">
+      <div class="imdb-tag"><span class="star">★</span> 8.1</div>
+      <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjWO9PtlWbPak219C2_aKqnOAonbucdt2xwB1RRQyM0XhzuoDWQ6zzkZUYb-cMGkrs13uGcB2f2GvoWTA8AmcJ6e-Lnz32Jfh2KRcOH2WD26fx43PXP8EpoZGCof2OrGtOOEoTXsvGr3euvOtBWhSTeH6fG5xA0x6mjm_o9-DNGjWNERDpLe8BvnfJQ2Q/s1600/09.jpg" alt="Ratatouille">
+      <div class="title"><i class="fa-solid fa-film"></i><span>Ratatouille</span></div>
+      <a href="#" class="download-btn">Download</a>
+    </div>
+
+    <div class="recent-post hidden-post">
+      <div class="imdb-tag"><span class="star">★</span> 8.2</div>
+      <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjSpS7SVzv-GTF7Oa1RQV-TOSGvwKt2Ue2mQm7u2RbH6Y_6eo0T0_07XjZDAsrGiU0Q3qkOmiNAyx_VBXHYnJV2GgtJ8vaRjevWraLLSv6PSKz9UIK-Q2eXKIpauqahO0gTWiKK-hNpmLHiWqmJvcxtP-6yyWJzDieuNk-kqK-Wkc5oxvOJbPPpydDsSg/s1600/10.jpg" alt="Finding Nemo">
+      <div class="title"><i class="fa-solid fa-film"></i><span>Finding Nemo</span></div>
+      <a href="#" class="download-btn">Download</a>
+    </div>
+  </div>
+</div>
+
+<!-- Other category sections -->
+<div class="latest-upload-section">
+  <h2 class="section-title">Latest Upload in Hindi Movies</h2>
+  <div class="latest-upload-container" id="hindiMovies">
+    <!-- Will be populated by JavaScript -->
+  </div>
+
+  <h2 class="section-title">Latest Upload in English Movies</h2>
+  <div class="latest-upload-container" id="englishMovies">
+    <!-- Will be populated by JavaScript -->
+  </div>
+
+  <h2 class="section-title">Latest Upload in Bangla Movies</h2>
+  <div class="latest-upload-container" id="banglaMovies">
+    <!-- Will be populated by JavaScript -->
+  </div>
+
+  <h2 class="section-title">Latest Upload in Games</h2>
+  <div class="latest-upload-container" id="games">
+    <!-- Will be populated by JavaScript -->
+  </div>
+</div>
+
+<!-- Footer Section -->
+<footer class="footer">
+  <div class="footer-content">
+    <div class="footer-section">
+      <h3>About Us</h3>
+      <p>PikoHub is your ultimate destination for movies, TV shows, and games. We provide high-quality content with the best user experience.</p>
+      <div class="social-links">
+        <a href="#"><i class="fab fa-facebook"></i></a>
+        <a href="#"><i class="fab fa-twitter"></i></a>
+        <a href="#"><i class="fab fa-instagram"></i></a>
+        <a href="#"><i class="fab fa-youtube"></i></a>
+      </div>
+    </div>
+
+    <div class="footer-section">
+      <h3>Quick Links</h3>
+      <ul>
+        <li><a href="#">Home</a></li>
+        <li><a href="#">Movies</a></li>
+        <li><a href="#">TV Shows</a></li>
+        <li><a href="#">Games</a></li>
+        <li><a href="#">Contact</a></li>
+      </ul>
+    </div>
+
+    <div class="footer-section">
+      <h3>Categories</h3>
+      <ul>
+        <li><a href="#">Action Movies</a></li>
+        <li><a href="#">Comedy Movies</a></li>
+        <li><a href="#">Drama Series</a></li>
+        <li><a href="#">Animation</a></li>
+        <li><a href="#">Documentary</a></li>
+      </ul>
+    </div>
+
+    <div class="footer-section">
+      <h3>Contact Info</h3>
+      <ul>
+        <li><i class="fas fa-envelope"></i> support@pikohub.com</li>
+        <li><i class="fas fa-phone"></i> +1 234 567 890</li>
+        <li><i class="fas fa-map-marker-alt"></i> 123 Movie Street, Entertainment City</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="footer-bottom">
+    <p>&copy; 2024 PikoHub. All rights reserved.</p>
+  </div>
+</footer>
+
+  <div class="modal-overlay" id="movieModal">
+    <div class="modal-content">
+      <span class="modal-close" onclick="closeModal()">&times;</span>
+      <div class="modal-header">
+        <img src="" alt="" class="modal-image" id="modalImage">
+        <div class="modal-info">
+          <h2 class="modal-title" id="modalTitle"></h2>
+          <div class="modal-rating">
+            <div class="modal-stars" id="modalStars"></div>
+            <span id="modalRating"></span>
+          </div>
+          <div class="modal-category" id="modalCategory"></div>
+        </div>
+      </div>
+      <div class="modal-divider"></div>
+      <div class="modal-ad">
+        <p>Advertisement Space</p>
+      </div>
+      <div class="modal-description" id="modalDescription"></div>
+      <div class="modal-divider"></div>
+      <table class="download-table">
+        <thead>
+          <tr>
+            <th>Quality</th>
+            <th>Size</th>
+            <th>Download</th>
+          </tr>
+        </thead>
+        <tbody id="downloadOptions">
+          <!-- Will be populated by JavaScript -->
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <script>
+    function toggleMenu() {
+      const navbar = document.getElementById('navbar');
+      const menuIcon = document.querySelector('.menu-icon i');
+      
+      navbar.classList.toggle('active');
+      document.body.style.overflow = navbar.classList.contains('active') ? 'hidden' : '';
+      
+      // Toggle menu icon
+      if (navbar.classList.contains('active')) {
+        menuIcon.classList.remove('fa-bars');
+        menuIcon.classList.add('fa-times');
+      } else {
+        menuIcon.classList.remove('fa-times');
+        menuIcon.classList.add('fa-bars');
+      }
+    }
+
+    // Add click handlers for dropdowns in mobile
+    document.querySelectorAll('.nav-item').forEach(item => {
+      const dropdownTrigger = item.querySelector('span');
+      if (dropdownTrigger) {
+        dropdownTrigger.addEventListener('click', (e) => {
+          if (window.innerWidth <= 768) {
+            e.preventDefault();
+            e.stopPropagation();
+            item.classList.toggle('active');
+          }
+        });
+      }
+    });
+
+    // Close menu when clicking outside
+    document.addEventListener('click', (e) => {
+      const navbar = document.getElementById('navbar');
+      const menuIcon = document.querySelector('.menu-icon');
+      
+      if (window.innerWidth <= 768 && 
+          navbar.classList.contains('active') && 
+          !navbar.contains(e.target) && 
+          !menuIcon.contains(e.target)) {
+        navbar.classList.remove('active');
+        document.body.style.overflow = '';
+        const menuIconElement = menuIcon.querySelector('i');
+        menuIconElement.classList.remove('fa-times');
+        menuIconElement.classList.add('fa-bars');
+      }
+    });
+
+    // Slider functionality
+    const track = document.getElementById('sliderTrack');
+    const container = document.getElementById('sliderContainer');
+    const posts = document.querySelectorAll('.post');
+    let isDown = false;
+    let startX;
+    let scrollLeft;
+    let currentIndex = 0;
+
+    // Function to update slider based on screen size
+    function updateSliderLayout() {
+      const containerWidth = container.offsetWidth;
+      const postWidth = posts[0].offsetWidth;
+      const visiblePosts = Math.floor(containerWidth / postWidth);
+      
+      // Calculate total width of all posts
+      const totalWidth = Array.from(posts).reduce((width, post) => width + post.offsetWidth, 0);
+      track.style.width = `${totalWidth}px`;
+      
+      // Reset position if needed
+      if (currentIndex >= posts.length) {
+        currentIndex = 0;
+        track.style.transform = 'translateX(0)';
+      }
+    }
+
+    // Update layout on load and resize
+    window.addEventListener('load', updateSliderLayout);
+    window.addEventListener('resize', updateSliderLayout);
+
+    // Auto Slide with error handling
+    function autoSlide() {
+      try {
+        const postWidth = posts[0].offsetWidth;
+        const containerWidth = container.offsetWidth;
+        const visible = Math.floor(containerWidth / postWidth);
+        
+        // Move to next slide
+        currentIndex = (currentIndex + 1) % posts.length;
+        
+        // Calculate the new position
+        const newPosition = currentIndex * postWidth;
+        
+        // Apply smooth transition
+        track.style.transition = 'transform 0.5s ease';
+        track.style.transform = `translateX(-${newPosition}px)`;
+        
+        // Reset transition after animation
+        setTimeout(() => {
+          track.style.transition = '';
+        }, 500);
+      } catch (error) {
+        console.error('Error in auto slide:', error);
+      }
+    }
+
+    const slideInterval = setInterval(autoSlide, 5000);
+
+    // Manual Dragging with improved handling
+    container.addEventListener('mousedown', (e) => {
+      isDown = true;
+      startX = e.pageX - container.offsetLeft;
+      scrollLeft = track.offsetLeft;
+      container.style.cursor = 'grabbing';
+      track.style.transition = 'none';
+      clearInterval(slideInterval);
+    });
+
+    container.addEventListener('mouseleave', () => {
+      if (!isDown) return;
+      isDown = false;
+      container.style.cursor = 'grab';
+      snapToNearestSlide();
+      slideInterval = setInterval(autoSlide, 5000);
+    });
+
+    container.addEventListener('mouseup', () => {
+      if (!isDown) return;
+      isDown = false;
+      container.style.cursor = 'grab';
+      snapToNearestSlide();
+      slideInterval = setInterval(autoSlide, 5000);
+    });
+
+    container.addEventListener('mousemove', (e) => {
+      if (!isDown) return;
+      e.preventDefault();
+      const x = e.pageX - container.offsetLeft;
+      const walk = (x - startX);
+      track.style.transform = `translateX(${walk + scrollLeft}px)`;
+    });
+
+    // Function to snap to nearest slide
+    function snapToNearestSlide() {
+      const postWidth = posts[0].offsetWidth;
+      const currentPosition = -parseInt(track.style.transform.replace('translateX(', '').replace('px)', ''));
+      const nearestIndex = Math.round(currentPosition / postWidth);
+      currentIndex = Math.max(0, Math.min(nearestIndex, posts.length - 1));
+      
+      track.style.transition = 'transform 0.3s ease';
+      track.style.transform = `translateX(-${currentIndex * postWidth}px)`;
+    }
+
+    // Improved touch support for mobile
+    let touchStartX = 0;
+    let touchStartY = 0;
+
+    container.addEventListener('touchstart', (e) => {
+      touchStartX = e.touches[0].clientX;
+      touchStartY = e.touches[0].clientY;
+      track.style.transition = 'none';
+      clearInterval(slideInterval);
+    });
+
+    container.addEventListener('touchmove', (e) => {
+      if (!touchStartX) return;
+      
+      const touchX = e.touches[0].clientX;
+      const touchY = e.touches[0].clientY;
+      
+      const diffX = touchStartX - touchX;
+      const diffY = touchStartY - touchY;
+      
+      if (Math.abs(diffX) > Math.abs(diffY)) {
+        e.preventDefault();
+        const currentPosition = -parseInt(track.style.transform.replace('translateX(', '').replace('px)', '') || '0');
+        track.style.transform = `translateX(${-currentPosition - diffX}px)`;
+      }
+    });
+
+    container.addEventListener('touchend', () => {
+      if (!touchStartX) return;
+      touchStartX = 0;
+      touchStartY = 0;
+      snapToNearestSlide();
+      slideInterval = setInterval(autoSlide, 5000);
+    });
+
+    // Initialize slider position
+    track.style.transform = 'translateX(0)';
+
+    // Add these functions for modal functionality
+    function openModal(post) {
+      const modal = document.getElementById('movieModal');
+      const modalImage = document.getElementById('modalImage');
+      const modalTitle = document.getElementById('modalTitle');
+      const modalRating = document.getElementById('modalRating');
+      const modalStars = document.getElementById('modalStars');
+      const modalCategory = document.getElementById('modalCategory');
+      const modalDescription = document.getElementById('modalDescription');
+      const downloadOptions = document.getElementById('downloadOptions');
+
+      // Set modal content
+      modalImage.src = post.querySelector('img').src;
+      modalTitle.textContent = post.querySelector('.title span').textContent;
+      const rating = post.querySelector('.imdb-tag').textContent.replace('★', '').trim();
+      modalRating.textContent = rating;
+
+      // Generate stars based on rating
+      const ratingValue = parseFloat(rating);
+      const fullStars = Math.floor(ratingValue / 2);
+      const hasHalfStar = ratingValue % 2 >= 1;
+      
+      modalStars.innerHTML = '';
+      for (let i = 0; i < 5; i++) {
+        if (i < fullStars) {
+          modalStars.innerHTML += '<i class="fas fa-star"></i>';
+        } else if (i === fullStars && hasHalfStar) {
+          modalStars.innerHTML += '<i class="fas fa-star-half-alt"></i>';
+        } else {
+          modalStars.innerHTML += '<i class="far fa-star"></i>';
+        }
+      }
+
+      // Get category and description from the post data
+      const postTitle = post.querySelector('.title span').textContent;
+      const postData = findPostData(postTitle);
+      
+      if (postData) {
+        modalCategory.textContent = postData.category || 'Animation';
+        modalDescription.textContent = postData.description || 'A captivating animated film that brings imagination to life.';
+      } else {
+        modalCategory.textContent = 'Animation';
+        modalDescription.textContent = 'A captivating animated film that brings imagination to life.';
+      }
+
+      // Generate download options
+      const qualities = [
+        { quality: '4K 2160p', size: '13GB' },
+        { quality: 'Full HD 1080p', size: '3.4GB' },
+        { quality: 'HD 720p', size: '1.6GB' },
+        { quality: 'HD 720p HEVC', size: '890MB' },
+        { quality: 'SD 480p', size: '659MB' }
+      ];
+
+      downloadOptions.innerHTML = qualities.map(option => `
+        <tr>
+          <td>${option.quality}</td>
+          <td>${option.size}</td>
+          <td><a href="#" class="download-btn-modal">Download</a></td>
+        </tr>
+      `).join('');
+
+      modal.style.display = 'block';
+      document.body.style.overflow = 'hidden';
+    }
+
+    // Helper function to find post data
+    function findPostData(title) {
+      // Search in animation category
+      const animationPost = postsData.animation.find(post => post.title === title);
+      if (animationPost) return animationPost;
+
+      // Search in other categories if needed
+      const allCategories = ['hindi', 'english', 'bangla', 'games'];
+      for (const category of allCategories) {
+        const post = postsData[category].find(post => post.title === title);
+        if (post) return post;
+      }
+      return null;
+    }
+
+    function closeModal() {
+      const modal = document.getElementById('movieModal');
+      modal.style.display = 'none';
+      document.body.style.overflow = 'auto';
+    }
+
+    // Add click event listeners to posts
+    document.querySelectorAll('.post, .recent-post, .latest-upload-post').forEach(post => {
+      const clickableElements = post.querySelectorAll('img, .title, .download-btn');
+      clickableElements.forEach(element => {
+        element.style.cursor = 'pointer';
+        element.addEventListener('click', () => openModal(post));
+      });
+    });
+
+    // Close modal when clicking outside
+    document.getElementById('movieModal').addEventListener('click', (e) => {
+      if (e.target === e.currentTarget) {
+        closeModal();
+      }
+    });
+
+    // Search functionality
+    const searchInput = document.getElementById('searchInput');
+    const searchButton = document.getElementById('searchButton');
+    const mobileSearchButton = document.getElementById('mobileSearchButton');
+    const searchResults = document.getElementById('searchResults');
+    const searchBox = document.querySelector('.search-box');
+    let searchTimeout;
+
+    function performSearch() {
+      const searchTerm = searchInput.value.toLowerCase().trim();
+      if (searchTerm.length < 2) {
+        searchResults.classList.remove('active');
+        return;
+      }
+
+      // Include all posts, including hidden ones
+      const allPosts = [
+        ...document.querySelectorAll('.post'),
+        ...document.querySelectorAll('.recent-post'),
+        ...document.querySelectorAll('.latest-upload-post')
+      ];
+      
+      const matches = allPosts.filter(post => {
+        const title = post.querySelector('.title span').textContent.toLowerCase();
+        return title.includes(searchTerm);
+      });
+
+      if (matches.length > 0) {
+        searchResults.innerHTML = matches.map(post => {
+          const title = post.querySelector('.title span').textContent;
+          const rating = post.querySelector('.imdb-tag').textContent;
+          const image = post.querySelector('img').src;
+          
+          return `
+            <div class="search-result-item" data-post-index="${Array.from(allPosts).indexOf(post)}">
+              <img src="${image}" alt="${title}">
+              <div class="search-result-info">
+                <div class="search-result-title">${title}</div>
+                <div class="search-result-rating">${rating}</div>
+              </div>
+            </div>
+          `;
+        }).join('');
+
+        // Add click event listeners to search results
+        document.querySelectorAll('.search-result-item').forEach(item => {
+          item.addEventListener('click', () => {
+            const postIndex = parseInt(item.dataset.postIndex);
+            const targetPost = allPosts[postIndex];
+            openModal(targetPost);
+            searchResults.classList.remove('active');
+            if (window.innerWidth <= 768) {
+              searchBox.classList.remove('active');
+            }
+          });
+        });
+      } else {
+        searchResults.innerHTML = '<div class="no-results">No movies found</div>';
+      }
+
+      searchResults.classList.add('active');
+    }
+
+    // Mobile search toggle
+    mobileSearchButton.addEventListener('click', () => {
+      searchBox.classList.add('active');
+      searchInput.focus();
+    });
+
+    // Search event listeners
+    searchInput.addEventListener('input', () => {
+      clearTimeout(searchTimeout);
+      searchTimeout = setTimeout(performSearch, 300);
+    });
+
+    searchButton.addEventListener('click', performSearch);
+
+    // Close search results when clicking outside
+    document.addEventListener('click', (e) => {
+      if (!searchInput.contains(e.target) && !searchResults.contains(e.target) && !e.target.classList.contains('fa-search')) {
+        searchResults.classList.remove('active');
+        if (window.innerWidth <= 768) {
+          searchBox.classList.remove('active');
+        }
+      }
+    });
+
+    // Handle keyboard events
+    searchInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        performSearch();
+      } else if (e.key === 'Escape') {
+        searchResults.classList.remove('active');
+        if (window.innerWidth <= 768) {
+          searchBox.classList.remove('active');
+        }
+      }
+    });
+
+    // Add click handlers for images
+    document.querySelectorAll('.post-inner img, .recent-post img, .latest-upload-post img').forEach(img => {
+      img.addEventListener('click', function() {
+        // Remove active class from all images
+        document.querySelectorAll('.post-inner img, .recent-post img, .latest-upload-post img').forEach(i => {
+          i.classList.remove('active');
+        });
+        // Add active class to clicked image
+        this.classList.add('active');
+      });
+    });
+
+    // Remove active class when clicking outside
+    document.addEventListener('click', function(e) {
+      if (!e.target.matches('.post-inner img, .recent-post img, .latest-upload-post img')) {
+        document.querySelectorAll('.post-inner img, .recent-post img, .latest-upload-post img').forEach(img => {
+          img.classList.remove('active');
+        });
+      }
+    });
+
+    // Sample data structure for posts
+    const postsData = {
+      animation: [
+        {
+          title: "Spirited Away",
+          image: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhiP5RquF_fTfQV-6CJIpKvIG53yeroXxLJbKFNGfTjfU8fmUss2Hdl_ms1MabxKN6jpLDImfO-TVKCxhUDzNmZCPeLsahsRpew8tvXu6zigdhkIebcjcnxO_zqd8sWP9bIiCtQHRHqcCVizYYdLxyJRL5k8EitX8kX8smeLnf5EM13sJ-vdeFWejMoKg/s1600/01",
+          rating: "8.6",
+          category: "Fantasy, Adventure",
+          description: "A young girl enters a mystical world where her parents are turned into pigs. She must work in a bathhouse run by spirits to find a way to free them. Hayao Miyazaki's magical storytelling and breathtaking visuals make it unforgettable."
+        },
+        {
+          title: "Coco",
+          image: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhAJKUfoAkoF6AlntV2Zm4t4FnmpDJwa1LonzyxrSRH1N_0FHen3B9MkgO7xHaHumfB7NxODxBvt5Hp3LyNV_6mobABWUM7CJwm8Rw4PdsD01WDRJURMwJNzgI1Scx41SulZUkg5Eq8I5ou_CzMAJuCdFjgcnPzTEIici4GGcHnIPozWl3eYjFEvS4sPg/s1600/2.png",
+          rating: "8.4",
+          category: "Family, Music",
+          description: "A boy named Miguel travels to the Land of the Dead to uncover his family's hidden past. The movie celebrates music, memory, and Mexican culture in a vibrant journey."
+        },
+        {
+          title: "Up",
+          image: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiZ0PFz1DYjQzjlrzzpHBRcuYm9QbZVunOnYrFU_KWog8tPq7NTqD5Bd6CvQkKSc5WLEKFnO_DPYWe-43X5Y3Dq7On7McsvPpvOal-C7dIDLyTCYNWC_8s7jQgXW3QyEJpN2dAp6MxpK9ezE1xk155Dwr9tyjZTUt6tLe4mHhOcKyI36LdMiz8aObccgA/s1600/03.jpg",
+          rating: "8.3",
+          category: "Adventure, Comedy",
+          description: "An old man ties thousands of balloons to his house to fulfill a lifelong dream. With a young stowaway on board, it's a touching tale of love, loss, and friendship."
+        },
+        {
+          title: "Inside Out",
+          image: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhJ_y41rNyDnvF-uasglQG8VBLWCwaRiokcYgWeFLHd9X58Amm2y1KNcAB5wzgXGXX4pAVUvghc4hT0qad6Xw6zek60d1S_TVtqWMe_usZzD3yGyzBA2I-kgpZXmo6H7Ay9aGqnIzBBojqFUqv_FI8qZ8UFhHL8ZX9Jpw_6e6uWX8BlvvtdQ8_MZJEyMA/s1600/04.jpg",
+          rating: "8.1",
+          category: "Family, Drama",
+          description: "Explore the mind of a young girl through five emotions personified. It cleverly presents emotional growth and family bonds through animation."
+        },
+        {
+          title: "Zootopia",
+          image: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjPuPQ2Yc2H_4V-3Ss7XyfDx-ttG8S-H43dzZOSpgQUc6dIw-6xjksueKolLG0Y_9aF8zmI8o_p7_Q3ip2JHr-IWkdnbEw5qItEkTFXByt4m-On9e0tbd3SWqBO5zXJVv9WOLgOrb_X5JoJxK2SF-IcfM0O4Xy69e7ssGXazM9FJc1D-jkprUdD6COkvQ/s1600/05.jpg",
+          rating: "8.0",
+          category: "Mystery, Comedy",
+          description: "A rabbit cop teams up with a fox con artist to solve a mystery in a city of animals. Funny and smart, it carries a powerful message about prejudice."
+        },
+        {
+          title: "Toy Story 3",
+          image: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEj9hW3KIRnQQGaqa1zCWgkK75_JE8OrBHn4FIHjlMHwtrc1DjZjZTuy_QAp7I5E5JtlQSoxCG6eDFJSeeSSGCfbQs5IDxx_bu5AYV94p3ijUXZOU0fHbZ-rEk3wOgTtVVLcmOzUadwNG67FMNN9eXMb5dbApE_yBgLVhupDkQNPJyuJB3_Ysgkl__IrJg/s1600/06.jpg",
+          rating: "8.3",
+          category: "Adventure, Family",
+          description: "Woody and Buzz face an uncertain future when Andy goes to college. A heartfelt finale to a beloved trilogy."
+        },
+        {
+          title: "The Lion King (1994)",
+          image: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjWzMVWLVLLFS2BOkUnatye-c5L4VNNyC_RqkPBC7FiU0Ds88dBFe3Y_U0kvBxvQxP1VcbSJHCBEgw9W3LBc43uwbdt9fzwbwpN6-bt1mIfNgvYEaUZOuDop9X6Z2TLIjR6BtCGTZFdGZVZ3ATWMMSqvi3hOhNbO-VR98KuAsq5pjdrZVpxj60srmhCag/s1600/07.jpg",
+          rating: "8.5",
+          category: "Drama, Adventure",
+          description: "Simba must reclaim his place as king after the death of his father. Classic songs and powerful storytelling make this a timeless Disney film."
+        },
+        {
+          title: "How to Train Your Dragon",
+          image: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgSL4dvqlYdNXU6cHx-q6rWTWnUiZbGIWUqoQn3u_gOiiu19pjKZm3-oWy0q4sq7wWjjMgFB8Yc4nc8Z6GRBF5dS8L142ND9lWj4CDLIf2OmeNjjyluhyphenhyphenQmkFFCrN0QFbuF0gS89gVL1Chitr-xXvzSLfbhbTxe2klbgyLpw74ton-x8-0wg6jUg37zJQ/s1600/08.jpg",
+          rating: "8.1",
+          category: "Action, Fantasy",
+          description: "A Viking boy befriends a dragon and learns courage, empathy, and leadership. Stunning animation and thrilling sequences shine."
+        },
+        {
+          title: "Ratatouille",
+          image: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjWO9PtlWbPak219C2_aKqnOAonbucdt2xwB1RRQyM0XhzuoDWQ6zzkZUYb-cMGkrs13uGcB2f2GvoWTA8AmcJ6e-Lnz32Jfh2KRcOH2WD26fx43PXP8EpoZGCof2OrGtOOEoTXsvGr3euvOtBWhSTeH6fG5xA0x6mjm_o9-DNGjWNERDpLe8BvnfJQ2Q/s1600/09.jpg",
+          rating: "8.1",
+          category: "Comedy, Family",
+          description: "A rat with a passion for cooking defies odds to become a chef in Paris. It's a fun and inspiring story about following your passion."
+        },
+        {
+          title: "Finding Nemo",
+          image: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjSpS7SVzv-GTF7Oa1RQV-TOSGvwKt2Ue2mQm7u2RbH6Y_6eo0T0_07XjZDAsrGiU0Q3qkOmiNAyx_VBXHYnJV2GgtJ8vaRjevWraLLSv6PSKz9UIK-Q2eXKIpauqahO0gTWiKK-hNpmLHiWqmJvcxtP-6yyWJzDieuNk-kqK-Wkc5oxvOJbPPpydDsSg/s1600/10.jpg",
+          rating: "8.2",
+          category: "Adventure, Animation",
+          description: "A clownfish crosses the ocean to rescue his son. It's a heartfelt journey full of humor and emotion."
+        }
+      ],
+      hindi: [
+        {
+          title: "3 Idiots",
+          image: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjnyg_mrR5jsc3ULkVXwQFGtuqSJKIgN0ekWvJIL56bot9IURYx8pQVn7jBK03zNRvRQGLyoZVZosNazbKUSPNZCbHji7lag7lZdeY4fuCyfO7L489P-oYKInFqdzhQJQUw8H8byU8AU7FQrPspvnlaV0y3BeIeBfuZIRBVuHEKzCv69OBzpczAraLuDA/s1600/1.png",
+          rating: "8.4",
+          category: "Comedy, Drama",
+          description: "Three engineering students challenge the education system and follow their passion. The film is both hilarious and deeply emotional."
+        },
+        {
+          title: "Dangal",
+          image: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEikJXMf-HzHlu_PnkU5yVZc9z4dp5tPRJVYHFwmO5sGp6TB46KMfWZMO0SRvhyphenhyphenEPC09snEpjttl-X_wZRxjFoViedUeqgZX0i82jKkLvTH7RS2yNGF-RLFROsoli5Aq2kbIfhwgH8LLhpw_9qrxRvXn2cHbU-qw43LAN09FwteP2HKo8-SDNzMaNXVMzQ/s1600/2.png",
+          rating: "8.3",
+          category: "Biography, Sports",
+          description: "Based on the true story of Indian wrestler Mahavir Singh Phogat and his daughters. It's a motivational tale of hard work and gender equality."
+        },
+        {
+          title: "Taare Zameen Par",
+          image: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjBVdQHBVeIKhsqEsGpN08iHBXSzkbFgxowvDK46f94f7WUeBrvFlUXeXKsAQyEuE1a09QMwaiyNeR-KlBwgeC67E6LMhYr24SzPe_5S6o-dzNkeDJcC_tk8Pqi1EMpj9RYZ5dWPzSQB6bibFx0DkEd1tP3Kh-_MXa06thHYflp814zcW6qMbhZ_36Kjg/s1600/3.png",
+          rating: "8.3",
+          category: "Drama, Family",
+          description: "A dyslexic child is misunderstood until a teacher helps him discover his potential. A touching story about education and empathy."
+        },
+        {
+          title: "Gully Boy",
+          image: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjQ_706kfl-VYuhmd1VKQJjY4DcJrdVCHv-LM-1DUXoUERw-fw7j23Qy8QUCbt7H1wpMpUj3WolH6BXCusY7RihmQ210wTc2NJNYvlwPGjxT9dW2Bc0Ljce3BK_ONk_vLaRpVE_anDIHxYjRd-ba7F9A0c28c2Vl9R1yw9qrfxAbveZI9VcnyUT5fFqXg/s1600/4.png",
+          rating: "7.9",
+          category: "Music, Drama",
+          description: "Inspired by real Indian street rappers, it follows a slum boy's dream to make it big in hip-hop. Raw and powerful in emotion and rhythm."
+        },
+        {
+          title: "Shershaah",
+          image: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEh6WbXwkpSTiHrwdVw6IejX6KhDNTx6sW0fBpkDcwhw5QJhUNEEM1ZQUq__phC98NO5tng_SaGCziPrKKmiUYp9ZH-G2q3pRbx7NiZwU_JUJi5YTVhfeUnKNzIcg1G0qu25AB3sUPuGc8q3Ox7ZzbT1yECdQzu9GMe53pbeKjTTYi7SaT-8ZJfCeFZjYw/s1600/5.png",
+          rating: "8.4",
+          category: "Biography, War",
+          description: "Chronicles the life of Captain Vikram Batra, a hero in the Kargil War. A patriotic and emotional war film."
+        },
+        {
+          title: "Drishyam (2015)",
+          image: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgbocgSTDFOOMs4e11pPgAXGahdM5jgLtui7m3WGckfdCH_53nlj99XwFmN96B2JoYmINNIzK3HKJn2DKEgUrriqyCFdKvVJOeuB7jWryc8fDjYBY4hVL8NyW2VvC-5s-prXJOWXxsk5RcrowZrhsv7yeRbKLjZtZBJV9acenoHSuWc7m4JUyVNqs5v0w/s1600/6.png",
+          rating: "8.2",
+          category: "Thriller, Mystery",
+          description: "A common man goes to great lengths to protect his family after a crime. It's a masterclass in suspense and strategy."
+        },
+        {
+          title: "Barfi!",
+          image: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgOEq2AFCdDQ1IORXkEJEObZhbE2MjCteCgTA5ruS-fi_URMUr-mwcy1RFklP6tQf_VzTmsKhMAp1Ypn5KmvkTRavYPQDxzgzY1MRFPsFfJe5RA1HOdM0K4UJCbBEfMtavF4Qg7CnCZ4gWBqkm7Ujo-RtqQCcgPDibJhljPb6EbkbPtgLkhqCJJifCdTw/s1600/7.png",
+          rating: "8.1",
+          category: "Romance, Comedy",
+          description: "A deaf-mute boy's unconventional love story is heartwarming and artistic. Ranbir Kapoor delivers a touching performance."
+        },
+        {
+          title: "Chak De! India",
+          image: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjLwKSyfaKABP6a47mZVJ1yoaIgYzQDJAYjh_oP32jrjiBvH6bZ4GQS45Gi84JtWnyNLT3EjtBUc7hUaihUlaB2spspv40GkStZXgEjOn9vGOyCko82fvB-e4dqnA_LfiAqAV1snMTvAGo3phgdbvWRG02faEbWPnQbwWnZlD6TxrPCq86xsFE3adesbg/s1600/8.png",
+          rating: "8.2",
+          category: "Sports, Drama",
+          description: "A disgraced hockey player trains the Indian women's team to redemption. It's a tale of leadership, discipline, and unity."
+        },
+        {
+          title: "Andhadhun",
+          image: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgZrEUud9U6TlT4Sz0SzwUMCc7W11lFWliFgSLrX__pUZsyb1VDLBFIM3G31WFOwobanUzaSBZEpnCbV_OTLcPhYTInO__7rXGpmcHnp82tU9mBYOTz0Oehj2bF5wN-lRoBpwmr3CX8fyOBMLNHU_kZyWWgBzWiTxrtx21ZM3VS-Bn90huDhAmivfrAtg/s1600/9.png",
+          rating: "8.2",
+          category: "Thriller, Black Comedy",
+          description: "A blind pianist gets caught in a web of murder and deception. Full of twists and dark humor."
+        },
+        {
+          title: "Swades",
+          image: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgOEq2AFCdDQ1IORXkEJEObZhbE2MjCteCgTA5ruS-fi_URMUr-mwcy1RFklP6tQf_VzTmsKhMAp1Ypn5KmvkTRavYPQDxzgzY1MRFPsFfJe5RA1HOdM0K4UJCbBEfMtavF4Qg7CnCZ4gWBqkm7Ujo-RtqQCcgPDibJhljPb6EbkbPtgLkhqCJJifCdTw/s1600/10.png",
+          rating: "8.2",
+          category: "Drama",
+          description: "An NRI returns to India and rediscovers his roots through rural development. A socially conscious and emotional journey."
+        }
+      ],
+      english: [
+        {
+          title: "Thunderbolts",
+          image: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhSMsh99SOrbiEbCvdcTEbEF25WO8_xrAYryo70AHQkwq7ihM56gPrILGZBjOG2bsLulfJERyD2Py762Fd0xjGH5icvQjqLZ_15HGXon7fCTNgbxk1ErwcNo_lE9JqZIPS3nO0PjqdMHo2Vlp_iERGB-CQE0I6L0VJdjTuOVBU1iGIbtcZxApdlP-O2Bg/s1600/1.png",
+          rating: "6.8",
+          category: "Action, Adventure",
+          description: "Release Date: May 2, 2025. A team of antiheroes and reformed villains come together for a dangerous mission."
+        },
+        {
+          title: "Sinners",
+          image: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjv-9WnGKToJGLueKUhJC11GuC203qLcQnF73naHbq5V0dRrxD9W8UrVU6ZmZVsGrKzZ2lt7mWeaLwNLxTep86gj246kj_7BRViA-A94msCKQxXVqClByeK5cmt1ls8vLsOGQyy60YIK9HDyOG1ibKpVDguhwgqT1nrzXBB87CAntOapndMfWL1-ibhNg/s1600/2.png",
+          rating: "7.2",
+          category: "Drama, Thriller",
+          description: "Release Date: March 14, 2025. A gripping tale of redemption and moral choices in a world of crime."
+        },
+        {
+          title: "Havoc",
+          image: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiU1JfSqb4YhEjL1RuaIZVxGr6NhRJqP2wztPrp_fZT6T5Bfl3lL8-Ho4TmOx6xrgcMEJveq0qLrQoume5EutHdLYreVeyJaUWxfpfWElOURD9M6yG6LC82DNyM_6y1OZ0FSb6EIvl3m_3Y8EsBch1cER8EDnQ43i5XO6FoeGjP_uC8WH_nxtO-hX2BZw/s1600/3.png",
+          rating: "6.5",
+          category: "Action, Crime",
+          description: "Release Date: April 18, 2025. A high-stakes action thriller set in a world of organized crime."
+        },
+        {
+          title: "Another Simple Favor",
+          image: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhTSqyfAktZQs5txxBU3nTtaZQkyBMUNWyQ_QX7RiLf1UWOKAflkmxjtg4Q_IT8DpckXcwGivKQA8phR00_y-S7hdZnjuyE4MPOiMfK-iz69yzqq2nRB6E_KJtdZg-E2K-Gnx3oa-QXuHfrUP3artYSzqKauNo27hVfU4fmR5T3toVT7XWcCtNoUQoLbA/s1600/4.png",
+          rating: "6.3",
+          category: "Mystery, Thriller",
+          description: "Release Date: February 9, 2025. A twisted tale of friendship, secrets, and deception."
+        },
+        {
+          title: "The Accountant 2",
+          image: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjMRzpjGF2sRyb5Sw15butWpGRGm9kMU4QM2aHR424HVm-Atb14w484iQsUzlKlwLRwP4WzOu6gWSr7380PXxIa74Upbv-h6lAdZQH2aFKEm3kwOHsWh-OaV5SmicLRVA6DYg2ctUhKMHeijIsZ-1Dik9ZnZleehyphenhyphenpCuFhrZLPG3wuFTj_o-bZIF4zxzQ/s1600/5.png",
+          rating: "6.7",
+          category: "Action, Crime",
+          description: "Release Date: March 28, 2025. The highly skilled forensic accountant returns for another dangerous mission."
+        },
+        {
+          title: "Conclave",
+          image: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhNYzhd3kGzt7Bii0pFGgj7TpYrSIrAjU_JiM5YEVs1bx4-nFbdCdaivw28abVTZPenVDwVd8lnxBV8in5NOwQ7Zd2nT90wzQoT9uuyPOg5hFGrqOJJkOYOzXd-q-MjMvHgXrdd7846_AuLKhs5Lc7CLRrpVQNqI4W1D1pZFlgz0ZgV-jKjBijtgZK-Qw/s1600/6.png",
+          rating: "6.4",
+          category: "Drama, Thriller",
+          description: "Release Date: January 24, 2025. A political thriller set in the highest levels of power."
+        },
+        {
+          title: "Exterritorial",
+          image: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjCVzxcVRYeXl1kzZE83PaYL939vHtTCpNXr7lZGGozXptbpQiWdohYy8qLL4ZPUt4ZMZTB9jt58c9GpMhsP9FVN5novRcSGGYpw8_nqqRovKPMmKSWXvxT04LVvwfYuctHAqFCTcWMflZZrP0WdXD7VPsQj8zKD7IGo0sNTR0jicocvVD7rawRcDxLqw/s1600/7.png",
+          rating: "6.1",
+          category: "Sci-Fi, Action",
+          description: "Release Date: April 4, 2025. A sci-fi action film exploring the boundaries of human jurisdiction."
+        },
+        {
+          title: "Now You See Me: Now You Don't",
+          image: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgg3tVuwlRYg0KPyXLp-QgZgAuIVUr3pJlibn-NAxkVMV4cYjpjgcJs7ylRJwz5ebPcmLpor1v7gmQByJw4lKHV_wGJUGgX3ZqgQz62yQaX5isRKOWnvSmKzZnR8ccWh3tfIp7pClpr9Xwhuh6h3M3IdtdMFhFQ-pnr3k-iHz9ARvYIZdKW8QtnfLFG2g/s1600/8",
+          rating: "6.6",
+          category: "Crime, Thriller",
+          description: "Release Date: May 16, 2025. The illusionists return for another high-stakes heist."
+        },
+        {
+          title: "Companion",
+          image: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiX4LaWTecK0BSehd67U2Fo1UJeK5aCmP3rRafrZixk0-sbECahmVz0bLx2ve-_rfG8G0uq7CJzyJ_0t4mXq1aF4QYFrx3BY7EGHasKYYwisuddcwSZ-Wv5GhaHx50M4ksvNBiQNVpPMrlmiDMPAedrHx2geFizccGK5_6eLl92qQxhPovGPIO4WXG1jQ/s1600/9.png",
+          rating: "6.8",
+          category: "Drama, Sci-Fi",
+          description: "Release Date: March 7, 2025. A story about artificial intelligence and human connection."
+        },
+        {
+          title: "Black Bag",
+          image: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgyLzXlDa3WwJKK1njX0VVxlE6QSLGV5POU-g0-hqH25i7n8R8oHTW2RNnAsjeJGLTDu6mH2EldTUm71cwvwQwUv96STKsYNoRlPZgqDJCFD0oLMMX5sorEKsS-v5RS5DB1xO8DhyFNDJwg2feUSyj9CWb_gti6Hhe0aARkTuSpXZoA0tJL5prRFmtpUw/s1600/10.png",
+          rating: "6.5",
+          category: "Thriller, Mystery",
+          description: "Release Date: February 23, 2025. A mysterious briefcase leads to a dangerous conspiracy."
+        }
+      ],
+      bangla: [
+        {
+          title: "Pather Panchali",
+          image: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgeBkTfuo_hFZsrvxppX6q-31_2MM1Fi1_Vop0xjrmiqM-MUlkFMiiDbd-WYrB9Ng3sC0H7l_z_CyM1qGyMAzXXiMK3VutH2pSdVsa-d3ird-RcCJB5CpKcCuOx-i9mcibim-R4AqfbKPIUyJrEdtwQtqt3MHuvvuRrTuiX-Kt6q9IB3uqHLJ4OcF2qbg/s1600/1.png",
+          rating: "8.5",
+          category: "Drama",
+          description: "A poetic depiction of rural Bengali life through the eyes of a poor boy named Apu. Satyajit Ray's debut is a cornerstone of Indian cinema."
+        },
+        {
+          title: "Monpura",
+          image: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEi7H8_-qevZgI85Ovn5mZaJPxw3dq2hNdNCpnImOG_l9h9uV4cZUJviAIlsMpHgGKN3aLutL-7f3I2CA4Wx-8jIkasL8frfjZPhlV5qXCJkm6u1hRu-QjamjYG1uk_UuKVA7NVZA5p_PuQP9K1_wZzlUFAeQ1ifoYz1GF9HV9IjrF6dnOWT3d3KdWJcYg/s1600/2.png",
+          rating: "8.3",
+          category: "Romance, Drama",
+          description: "A tragic love story set on a remote island, capturing raw emotion and rural beauty with unforgettable music."
+        },
+        {
+          title: "Television",
+          image: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEj_81Pivg-Dmx8oecFb3DpfU3Q7hQoCtAX3xf8U7MqTxK_ANbs2YGc8Yg2t5IWLwclNvBYN2l4Q6MlrAn3jdQyCewDYg_-aVFy9etHPvQ39sQw-rTDUJAh4JXQGrU1jXt99Y65psWP9Zd4ASh1AV1H0YvSJssavybuxhgjY487Nsc-EHLi8juua_WNuog/s1600/3.png",
+          rating: "8.2",
+          category: "Satire, Drama",
+          description: "A conservative village's struggle with modernity when a TV is banned, leading to change and unexpected reactions."
+        }
+      ],
+      games: [
+        {
+          title: "The Witcher 3: Wild Hunt",
+          image: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiSQ4IyyuVLqT0R1-9FR-qAcvWmUI1QbuNdSPN30WqIZHGwWXRVpYlOz897-_ada6he6Yvj_k207Z1OIjKc8eV2qHSv94X6vShp74d9JoCc3CAzQRA9P2zo74XHI4gKDUKzexX5X18-rXEJt59e32G72YFuByrb9P8RGLNcR9b30qkoAssRIn3e2mewZQ/s1600/2.png",
+          rating: "9.3",
+          category: "RPG, Fantasy",
+          description: "You play as Geralt, a monster hunter, in a vast, morally complex world. Deep stories and stunning landscapes define the game."
+        },
+        {
+          title: "Red Dead Redemption 2",
+          image: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhNlNnWZ4BZIDsPYXlr84FPTVtjBetPgUaI8bXk10PLPrbAmSfP-XqJLnvu7uynAbKRKMYA4E8B7vEwfMhr2wEUDwxxpX9DpAgC6VZ1Iylfd4PCFu0s4vSmgw4iBWGIF_xRrZtkQr0U0rXyp6n67Ys6Cenm8QhylE7Htx8jwyIRuisUmWWpduJRoaulmQ/s1600/3.png",
+          rating: "9.7",
+          category: "Action, Adventure",
+          description: "A cinematic Western journey with Arthur Morgan. Realistic gameplay, powerful storytelling, and immersive world-building."
+        },
+        {
+          title: "God of War (2018)",
+          image: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEg9WMUNZTFC-dqSC2UJIiBZA5W6bSvVNdNn_MYTXREqB2o0og3UQA1fZNlvEGhY-aBRZemew7JrQG-KAdbBuJhL4Zb3Ygby82QXJ0YJ_QyPGVNPPDLF8L9EjXmSPgCTkl6_eoCZsX11Eq4-Egzlovx1edRWyKlv9zt280LFYOZ8-KjQ_EZq-lJMfnrPAQ/s1600/4.png",
+          rating: "9.5",
+          category: "Action, Mythology",
+          description: "Kratos returns with his son in Norse mythology, combining brutal combat with a father-son story."
+        },
+        {
+          title: "Minecraft",
+          image: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgxyEFvgvTtx9uKZrzAwiQuPojYanD7uj4M6KiLuttD7t3AUIRreIJPqMpW4uYP5hRpAUkv8PBIexOwiT9S60-LkKdWGOqOWpSriIROCvxbf7aoj3s5wzpOZv8Rw4Cgirrg7tgLk9GFG3vkqSNDxb7p_cTdhAgFD3oPnSUqBAbNlT_HK4L2jSZF2EHh9w/s1600/5.png",
+          rating: "9.0",
+          category: "Sandbox, Adventure",
+          description: "Build, explore, and survive in a pixel world with limitless creative freedom. Ideal for all ages."
+        },
+        {
+          title: "Elden Ring",
+          image: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjQwJYKFBR9Xu7PF9dRVALvnjxswtCcBsc36XFxPSBH8f4TKzeY0F02AY-a1aIFeCnswCj-vm1TXHWGjOqEjvjebySBe1kx46q26RezB7CrYRQlCdEiQ8gPLwEQfV_XzZk_K1EMgA15M4XiKzdH7vU5XOmbRVdBobtUomloCaRkHSVrDJn66juD_d9pZg/s1600/6.png",
+          rating: "9.6",
+          category: "RPG, Fantasy",
+          description: "A vast open world filled with danger and lore, created by the makers of Dark Souls."
+        },
+        {
+          title: "Fortnite",
+          image: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEj40AnApO4MiAmS0l5-Bim4pJ9-Mt30M8h3cPMfzWVYIEq7WEcZtY_iR8DfL1enQmGcShMGQbs78PjI1bOWVxbpDtUeS-IGE8BHBafnYYsfOZGS_6m1dzzrZP-txNYHXnSSHSp3B-6UeyvH1HiXxdkLeyNZ64hVDPGvW6-0yUivphIDwevsKMSgpx5mow/s1600/7.png",
+          rating: "8.5",
+          category: "Battle Royale",
+          description: "Fast-paced survival game with creative modes and seasonal events. Play solo or with friends."
+        }
+      ]
+    };
+
+    // Function to create post HTML
+    function createPostHTML(post) {
+      return `
+        <div class="latest-upload-post">
+          <div class="imdb-tag"><span class="star">★</span> ${post.rating}</div>
+          <img src="${post.image}" alt="${post.title}">
+          <div class="title"><i class="fa-solid fa-film"></i><span>${post.title}</span></div>
+          <a href="#" class="download-btn">Download</a>
+        </div>
+      `;
+    }
+
+    // Function to populate sections
+    function populateSections() {
+      // Animation Movies (max 6 visible)
+      const animationContainer = document.getElementById('animationMovies');
+      if (animationContainer) {
+        const posts = postsData.animation.map((post, index) => {
+          const postHTML = createPostHTML(post);
+          const postElement = document.createElement('div');
+          postElement.innerHTML = postHTML;
+          const postDiv = postElement.firstElementChild;
+          
+          // Add hidden-post class to posts beyond the first 6
+          if (index >= 6) {
+            postDiv.classList.add('hidden-post');
+          }
+          
+          return postDiv;
+        });
+        
+        animationContainer.innerHTML = '';
+        posts.forEach(post => animationContainer.appendChild(post));
+      }
+
+      // Hindi Movies (max 6 visible)
+      const animationPosts = postsData.animation.map((post, index) => {
+        const isHidden = index >= 6;
+        return `
+          <div class="latest-upload-post ${isHidden ? 'hidden-post' : ''}">
+            <div class="imdb-tag"><span class="star">★</span> ${post.rating}</div>
+            <img src="${post.image}" alt="${post.title}">
+            <div class="title"><i class="fa-solid fa-film"></i><span>${post.title}</span></div>
+            <a href="#" class="download-btn">Download</a>
+          </div>
+        `;
+      });
+      animationContainer.innerHTML = animationPosts.join('');
+
+      // Hindi Movies (max 6 visible)
+      const hindiContainer = document.getElementById('hindiMovies');
+      const hindiPosts = postsData.hindi.map((post, index) => {
+        const isHidden = index >= 6;
+        return `
+          <div class="latest-upload-post ${isHidden ? 'hidden-post' : ''}">
+            <div class="imdb-tag"><span class="star">★</span> ${post.rating}</div>
+            <img src="${post.image}" alt="${post.title}">
+            <div class="title"><i class="fa-solid fa-film"></i><span>${post.title}</span></div>
+            <a href="#" class="download-btn">Download</a>
+          </div>
+        `;
+      });
+      hindiContainer.innerHTML = hindiPosts.join('');
+
+      // English Movies (max 6 visible)
+      const englishContainer = document.getElementById('englishMovies');
+      const englishPosts = postsData.english.map((post, index) => {
+        const isHidden = index >= 6;
+        return `
+          <div class="latest-upload-post ${isHidden ? 'hidden-post' : ''}">
+            <div class="imdb-tag"><span class="star">★</span> ${post.rating}</div>
+            <img src="${post.image}" alt="${post.title}">
+            <div class="title"><i class="fa-solid fa-film"></i><span>${post.title}</span></div>
+            <a href="#" class="download-btn">Download</a>
+          </div>
+        `;
+      });
+      englishContainer.innerHTML = englishPosts.join('');
+
+      // Bangla Movies (max 6 visible)
+      const banglaContainer = document.getElementById('banglaMovies');
+      const banglaPosts = postsData.bangla.map((post, index) => {
+        const isHidden = index >= 6;
+        return `
+          <div class="latest-upload-post ${isHidden ? 'hidden-post' : ''}">
+            <div class="imdb-tag"><span class="star">★</span> ${post.rating}</div>
+            <img src="${post.image}" alt="${post.title}">
+            <div class="title"><i class="fa-solid fa-film"></i><span>${post.title}</span></div>
+            <a href="#" class="download-btn">Download</a>
+          </div>
+        `;
+      });
+      banglaContainer.innerHTML = banglaPosts.join('');
+
+      // Games (max 6 visible)
+      const gamesContainer = document.getElementById('games');
+      const gamesPosts = postsData.games.map((post, index) => {
+        const isHidden = index >= 6;
+        return `
+          <div class="latest-upload-post ${isHidden ? 'hidden-post' : ''}">
+            <div class="imdb-tag"><span class="star">★</span> ${post.rating}</div>
+            <img src="${post.image}" alt="${post.title}">
+            <div class="title"><i class="fa-solid fa-film"></i><span>${post.title}</span></div>
+            <a href="#" class="download-btn">Download</a>
+          </div>
+        `;
+      });
+      gamesContainer.innerHTML = gamesPosts.join('');
+
+      // Add click handlers for images and modal
+      document.querySelectorAll('.latest-upload-post').forEach(post => {
+        const clickableElements = post.querySelectorAll('img, .title, .download-btn');
+        clickableElements.forEach(element => {
+          element.style.cursor = 'pointer';
+          element.addEventListener('click', () => openModal(post));
+        });
+      });
+    }
+
+    // Initialize sections
+    document.addEventListener('DOMContentLoaded', populateSections);
+  </script>
+</body>
+</html>
